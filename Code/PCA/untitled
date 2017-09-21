@@ -1,5 +1,1 @@
-The Python file and all 9 plots have been uploaded. I've put comments on the code as well.
-The program takes command line input as the file name to analyze(Eg: Python PCA.py "pca_a.txt").
 
-I strongly urge you guys to review this as much as possible and provide your feedback.
-I've verified PCA and SVD data sets(as this is verifiable against the library). However, TNSE is a convex function and gives different values in each run and hence is unverifiable.
