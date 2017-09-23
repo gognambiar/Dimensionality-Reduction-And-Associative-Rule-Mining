@@ -103,15 +103,15 @@ def generateRules(data, elem, confidence):
                     supp.append(main_data[elem])
             length -= 1
 
-    else:
-        # print elem
+    # else:
+    #     # print elem
 
-        if main_data[elem] >= confidence * 100:
-            rule.append(elem)
-            head.append(elem)
-            body.append([])
-            conf.append(main_data[elem]/len(data))
-            supp.append(main_data[elem])
+    #     if main_data[elem] >= confidence * 100:
+    #         rule.append(elem)
+    #         head.append(elem)
+    #         body.append([])
+    #         conf.append(main_data[elem]/len(data))
+    #         supp.append(main_data[elem])
 
 def template1(checkType, countType, elems):
     checkArea = eval(checkType.lower())
@@ -257,21 +257,21 @@ def main(argv):
 
 
     (result,cnt) = template1("BODY", "ANY", ['G10_Down'])
-    print '*******************template1 check**************************'
+    print '''*******************template1("BODY", "ANY", ['G10_Down']) check**************************'''
 
     for res in result:
         print res
     print cnt
 
     (result,cnt) = template2('HEAD',2)
-    print '*******************template2 check**************************'
+    print '''*******************template2('HEAD',2) check**************************'''
 
     for res in result:
         print res
     print cnt
 
     (result,cnt) = template3("1and2", "BODY", "ANY", ['G10_Down'], "HEAD", 2)
-    print '*******************template2 check**************************'
+    print '''*******************template3("1and2", "BODY", "ANY", ['G10_Down'], "HEAD", 2) check**************************'''
 
     for res in result:
         print res
