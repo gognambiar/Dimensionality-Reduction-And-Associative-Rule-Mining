@@ -147,7 +147,7 @@ def template2(checkType, countType):
 
     for i in xrange(len(checkArea)):
         storeItem = '{%s} -> {%s}' % (", ".join(body[i]), ", ".join(head[i]))
-        if len(checkArea[i]) == countType:
+        if len(checkArea[i]) >= countType:
             retData.append(storeItem)
 
     return (retData,len(retData))
@@ -205,10 +205,11 @@ def template3(*kwargs):
 def main(argv):
     global support
     global confidence
+    queryfile = None
     try:
-        opts, args = getopt.getopt(argv,"hi:o:c:s:",["ifile=", "ofile=", "cvalue=", "svalue"])
+        opts, args = getopt.getopt(argv,"hi:o:c:s:q:",["ifile=", "ofile=", "cvalue=", "svalue=", "qfile="])
     except getopt.GetoptError:
-        print('Apriori.py -i <inputfile> -o <outputfile> -c <confidence> -s <support>')
+        print('Apriori.py -i <inputfile> -o <outputfile> -c <confidence> -s <support> -q <queryfile>')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
@@ -222,6 +223,8 @@ def main(argv):
             confidence = float(arg)
         elif opt in ("-s", "--svalue"):
             support = float(arg)
+        elif opt in ("-q", "--qfile"):
+            queryfile = arg
     # print('Input file is ', inputfile)
     #print('Output file is ', outputfile)
     #print('Confidence is ', confidence)
@@ -237,6 +240,8 @@ def main(argv):
             break
 
     print 'Support is set to %s%%' % (support * 100)
+    print 'Confidence is set to %s%%' % (confidence * 100)
+    print
     items = {}
     for rul in main_data:
         length = len(rul)
@@ -244,48 +249,62 @@ def main(argv):
             items[length] = 0
         items[length] += 1
 
-    # print main_data
-
-    for item in sorted(items):
-        print 'Number of length-%s frequent itemsets: %s' % (item, items[item])
-
-    print 'Total number of frequent sets: %s' % (len(main_data))
-
     for elem in main_data:
         # print elem
         generateRules(data, elem, confidence)
 
+    # print main_data
 
-    (result,cnt) = template1("BODY", "ANY", ['G10_Down'])
-    print '''*******************template1("BODY", "ANY", ['G10_Down']) check**************************'''
+    if queryfile is None:
 
-    for res in result:
-        print res
-    print cnt
+        for item in sorted(items):
+            print 'Number of length-%s frequent itemsets: %s' % (item, items[item])
 
-    (result,cnt) = template2('HEAD',2)
-    print '''*******************template2('HEAD',2) check**************************'''
+        print 'Total number of frequent sets: %s' % (len(main_data))
 
-    for res in result:
-        print res
-    print cnt
 
-    (result,cnt) = template3("1and2", "BODY", "ANY", ['G10_Down'], "HEAD", 2)
-    print '''*******************template3("1and2", "BODY", "ANY", ['G10_Down'], "HEAD", 2) check**************************'''
 
-    for res in result:
-        print res
-    print cnt
 
-    # for i in xrange(len(rule)):
-        # print ", ".join(rule[i])
-        # print rule[i]
-        # print '{%s} -> {%s} , confidence = %s, support = %s' % (", ".join(body[i]), ", ".join(head[i]), conf[i], supp[i])
+        # (result,cnt) = template1("BODY", "ANY", ['G10_Down'])
+        # print '''*******************template1("BODY", "ANY", ['G10_Down']) check**************************'''
 
-    # for i in main_data:
-        # print i
+        # for res in result:
+        #     print res
+        # print cnt
+        print len(rule)
 
-    # print(FSet)
+        (result,cnt) = template2('BODY',2)
+        print '''*******************template2('HEAD',2) check**************************'''
+
+        for res in result:
+            print res
+        print cnt
+
+        # (result,cnt) = template3("1and2", "BODY", "ANY", ['G10_Down'], "HEAD", 2)
+        # print '''*******************template3("1and2", "BODY", "ANY", ['G10_Down'], "HEAD", 2) check**************************'''
+
+        # for res in result:
+        #     print res
+        # print cnt
+
+        # for i in xrange(len(rule)):
+            # print ", ".join(rule[i])
+            # print rule[i]
+            # print '{%s} -> {%s} , confidence = %s, support = %s' % (", ".join(body[i]), ", ".join(head[i]), conf[i], supp[i])
+
+        # for i in main_data:
+            # print i
+
+        # print(FSet)
+
+    else:
+        queries = [i.strip() for i in open(queryfile).read().split("\n")]
+        for query in queries:
+            print query
+            exec(query)
+            count = eval(query.split(", ")[1].split(")")[0])
+            print count
+            # pprint(eval(query.split(", ")[0].split("(")[1]))
 
 if __name__ == "__main__":
     main(sys.argv[1:])
