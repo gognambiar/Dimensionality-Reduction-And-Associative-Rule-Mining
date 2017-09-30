@@ -105,6 +105,7 @@ def main():
 	plt.ylabel('Principal Component 2')
 	plt.legend(numpoints=1)
 	plt.subplots_adjust(bottom=.20, left=.20)
+	plt.xticks(rotation=45)
 	fig3.suptitle("Algorithm - TNSE, Text File - "+fname[:-4],fontsize=20)
 	fig3.savefig("TNSE_"+fname+".png")
 	#plt.show()
