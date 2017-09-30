@@ -1,20 +1,13 @@
 import numpy as np
 import operator
 import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA as sklearnPCA
 from sklearn.manifold import TSNE
 import pandas as pd
 import sys
 
 #Function to calculate PCA
-def CalculatePCA(fname):
-    pddata = pd.read_csv(fname,sep='\t',header=None)
-    ncols = len(pddata.columns)
-    data = pddata.iloc[:,:-1]
-    data = data.values
-    origdata = data.copy()
-    data -= data.mean(axis=0)
-    cv_mat = np.cov(data.T)
+def CalculatePCA(pdata):
+    cv_mat = np.cov(pdata.T)
     eig_val,eig_vec = np.linalg.eigh(cv_mat)
     eig_vec = eig_vec.transpose()
     d = dict()
@@ -23,35 +16,41 @@ def CalculatePCA(fname):
     eig_mat = sorted(d.items(), key=operator.itemgetter(0),reverse=True)
     eig_mat = eig_mat[:2]
     dataPCA = np.concatenate((eig_mat[0][1][:,None],eig_mat[1][1][:,None]), axis = 1)
-    Y = data.dot(dataPCA)
-    return Y,pddata,ncols,data
+    Y = pdata.dot(dataPCA)
+    return Y
 
 
 #Function to calculate SVD
-def CalculateSVD(data):
-    u,s,v = np.linalg.svd(data.T)
+def CalculateSVD(sdata):
+    u,s,v = np.linalg.svd(sdata.T)
     u = u.transpose()
     u = u[:2]
     dataSVD = np.concatenate((u[0][:,None],u[1][:,None]), axis = 1)
-    W_SVD = data.dot(dataSVD)
+    W_SVD = sdata.dot(dataSVD)
     return W_SVD
 
 
 #Function to calculate TNSE
-def CalculateTNSE(data):
-    u_tnse = TSNE(n_components=2).fit_transform(data.T)
+def CalculateTNSE(tdata):
+    u_tnse = TSNE(n_components=2).fit_transform(tdata.T)
     u_tnse = u_tnse.transpose()
     u_tnse = u_tnse[:2]
     dataTNSE = np.concatenate((u_tnse[0][:,None],u_tnse[1][:,None]), axis = 1)
-    W_TNSE = data.dot(dataTNSE)
+    W_TNSE = tdata.dot(dataTNSE)
     return W_TNSE
 
 
 def main():
 	#Getting command line input data from user
 	fname = sys.argv[1]
+	pddata = pd.read_csv(fname,sep='\t',header=None)
+	ncols = len(pddata.columns)
+	data = pddata.iloc[:,:-1]
+	data = data.values
+	origdata = data.copy()
+	data -= data.mean(axis=0)
 	#Running for file pca_a.txt - The PCA Matrix is stored in the variable data.
-	Y,pddata,ncols,data = CalculatePCA(fname)
+	Y = CalculatePCA(data)
 
 	#Plotting Scatter Plot for the returned data
 	xval = pd.DataFrame(Y)[0]
@@ -65,12 +64,13 @@ def main():
 	plt.xlabel('Principal Component 1')
 	plt.ylabel('Principal Component 2')
 	plt.legend(numpoints=1)
-	fig1.suptitle('PCA',fontsize=20)
-	fig1.savefig("PCA.png")
+	plt.subplots_adjust(bottom=.20, left=.20)
+	fig1.suptitle("Algorithm - PCA, Text File - "+fname[:-4],fontsize=20)
+	fig1.savefig("PCA_"+fname+".png")
 	#plt.show()
 
 	#Calling SVD
-	SVDData = CalculateSVD(data)
+	SVDData = CalculateSVD(origdata)
 
 	#Plotting SVD
 	X_SVD = pd.DataFrame(SVDData)[0]
@@ -84,12 +84,13 @@ def main():
 	plt.xlabel('Principal Component 1')
 	plt.ylabel('Principal Component 2')
 	plt.legend(numpoints=1)
-	fig2.suptitle('SVD',fontsize=20)
-	fig2.savefig("SVD.png")
+	plt.subplots_adjust(bottom=.20, left=.20)
+	fig2.suptitle("Algorithm - SVD, Text File - "+fname[:-4],fontsize=20)
+	fig2.savefig("SVD_"+fname+".png")
 	#plt.show()
 
 	#Calling TNSE
-	TNSEData = CalculateTNSE(data)
+	TNSEData = CalculateTNSE(origdata)
 
 	#Plotting TNSE
 	X_TNSE = pd.DataFrame(TNSEData)[0]
@@ -103,8 +104,9 @@ def main():
 	plt.xlabel('Principal Component 1')
 	plt.ylabel('Principal Component 2')
 	plt.legend(numpoints=1)
-	fig3.suptitle('TNSE',fontsize=20)
-	fig3.savefig("TNSE.png")
+	plt.subplots_adjust(bottom=.20, left=.20)
+	fig3.suptitle("Algorithm - TNSE, Text File - "+fname[:-4],fontsize=20)
+	fig3.savefig("TNSE_"+fname+".png")
 	#plt.show()
 
 
