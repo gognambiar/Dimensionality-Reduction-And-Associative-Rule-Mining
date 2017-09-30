@@ -44,6 +44,7 @@ def main():
 	#Getting command line input data from user
 	fname = sys.argv[1]
 	pddata = pd.read_csv(fname,sep='\t',header=None)
+	fname = fname.split("/")[-1]
 	ncols = len(pddata.columns)
 	data = pddata.iloc[:,:-1]
 	data = data.values
