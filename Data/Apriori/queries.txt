@@ -1,3 +1,4 @@
+(result, cnt) = template1("RULE", "ANY", ["G1_Up"])
 (result11, cnt) = template1("RULE", "ANY", ['G59_Up'])
 (result12, cnt) = template1("RULE", "NONE", ['G59_Up'])
 (result13, cnt) = template1("RULE", 1, ['G59_Up', 'G10_Down'])

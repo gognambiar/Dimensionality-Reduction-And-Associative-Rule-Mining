@@ -1,0 +1,1 @@
+Usage : python Apriori.py -i <association file> -s <support in decimal [0.4 for 40% etc] -c <confidence in decimal [0.3 for 30%] -q <query file (optional)

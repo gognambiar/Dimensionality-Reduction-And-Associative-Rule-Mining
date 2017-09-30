@@ -30,34 +30,24 @@ def readFile(fileName):
         data[i] = frozenset(data[i])
 
 
-    # pprint(FSet)
-    # exit(0)
     return data
 
 def getFrequentItemSets(data):
-    # print(len(data))
     for key, value in FSet.items():
         if ((value*100)/float(len(data))) < support*100 :
             FSet.pop(key, None)
         else:
-            # print key,value,(value/float(len(data))),(value/float(len(data))) < support,support
             main_data[key] = value
-            # FSet[frozenset([key])] = value
 
 def getSupport(data, items):
     count=0
-    # for row in data:
-    #     count += 1&items.issubset(row)
     return ([items.issubset(row) for row in data]).count(True)
 
 
 def joinItemSets(data):
     global FSet
-    # itemList=list(sorted(FSet.keys(), key = lambda x: int("".join(re.findall("\d+",x)))))
-    # item1List=list(sorted(F1Set.keys(), key = lambda x: int("".join(re.findall("\d+",x)))))
     itemList = list(FSet.keys())
 
-    # print len(itemList)
     FSet = {}
     items=[]
     # for item in list(it.combinations(itemList,2)):
@@ -66,28 +56,22 @@ def joinItemSets(data):
             if item == elem:
                 continue
 
-        # if ",".join(item[0].split(",")[:-1]) == ",".join(item[1].split(",")[:-1]):
-            # item_str=",".join([item,elem])
-            # order = [int(i) for i in re.findall("\d+",item_str)]
             order = frozenset(list(item) + list(elem))
-            # if order != sorted(order) or len(set(order)) != len(order):
+
             if len(order) != len(item) + 1:
                 continue
-            # print item_str,order
+
             count = getSupport(data,order)
-            # print count,order
+
             if ((count*100)/float(len(data))) >= support*100 :
-                # print order
                 FSet[order] = count
                 main_data[order] = count
-                # print order
 
 
 def generateRules(data, elem, confidence):
-    # result = []
     if len(elem) > 1:
         length = len(elem) - 1
-        # print elem
+
         while length > 0:
             for comb in map(frozenset,it.combinations(elem,length)):
                 elemBody = comb
@@ -103,15 +87,6 @@ def generateRules(data, elem, confidence):
                     supp.append(main_data[elem])
             length -= 1
 
-    # else:
-    #     # print elem
-
-    #     if main_data[elem] >= confidence * 100:
-    #         rule.append(elem)
-    #         head.append(elem)
-    #         body.append([])
-    #         conf.append(main_data[elem]/len(data))
-    #         supp.append(main_data[elem])
 
 def template1(checkType, countType, elems):
     checkArea = eval(checkType.lower())
@@ -120,12 +95,11 @@ def template1(checkType, countType, elems):
     tempCount = 0
 
     for i in xrange(len(checkArea)):
-        # print item, elems
         storeItem = '{%s} -> {%s}' % (", ".join(body[i]), ", ".join(head[i]))
         tempCount = ([frozenset([j]).issubset(checkArea[i]) for j in elems]).count(True)
+
         if tempCount > 0:
             flag = True
-            # print storeItem,tempCount
             trueRetData.append([storeItem,tempCount])
         else:
             falseRetData.append(storeItem)
@@ -169,14 +143,9 @@ def template3(*kwargs):
 
         funcArgs = [repr(i) for i in kwargs[:(argsCount)]]
 
-        # for arg in funcArgs:
-        #     print repr(arg)
-
         del kwargs[:(argsCount)]
 
         tempCall = '''template%s(%s)''' % (number, ", ".join(map(str,funcArgs)))
-
-        # print tempCall
 
         (result,cnt) = eval(tempCall)
 
@@ -190,16 +159,6 @@ def template3(*kwargs):
 
 
     return (data,len(data))
-
-
-
-
-
-
-
-            
-
-
 
 
 def main(argv):
@@ -225,17 +184,14 @@ def main(argv):
             support = float(arg)
         elif opt in ("-q", "--qfile"):
             queryfile = arg
-    # print('Input file is ', inputfile)
-    #print('Output file is ', outputfile)
-    #print('Confidence is ', confidence)
-    # print('support is ' , support)
+
     data = readFile(inputfile)
     getFrequentItemSets(data)
-    # print len(main_data)
+
     for i in xrange(len(data[0])-1):
         prev_len = len(main_data)
         joinItemSets(data)
-        # print len(main_data)
+
         if prev_len == len(main_data):
             break
 
@@ -250,10 +206,7 @@ def main(argv):
         items[length] += 1
 
     for elem in main_data:
-        # print elem
         generateRules(data, elem, confidence)
-
-    # print main_data
 
     if queryfile is None:
 
@@ -262,49 +215,13 @@ def main(argv):
 
         print 'Total number of frequent sets: %s' % (len(main_data))
 
-
-
-
-        # (result,cnt) = template1("BODY", "ANY", ['G10_Down'])
-        # print '''*******************template1("BODY", "ANY", ['G10_Down']) check**************************'''
-
-        # for res in result:
-        #     print res
-        # print cnt
-        print len(rule)
-
-        (result,cnt) = template2('BODY',2)
-        print '''*******************template2('HEAD',2) check**************************'''
-
-        for res in result:
-            print res
-        print cnt
-
-        # (result,cnt) = template3("1and2", "BODY", "ANY", ['G10_Down'], "HEAD", 2)
-        # print '''*******************template3("1and2", "BODY", "ANY", ['G10_Down'], "HEAD", 2) check**************************'''
-
-        # for res in result:
-        #     print res
-        # print cnt
-
-        # for i in xrange(len(rule)):
-            # print ", ".join(rule[i])
-            # print rule[i]
-            # print '{%s} -> {%s} , confidence = %s, support = %s' % (", ".join(body[i]), ", ".join(head[i]), conf[i], supp[i])
-
-        # for i in main_data:
-            # print i
-
-        # print(FSet)
-
     else:
-        queries = [i.strip() for i in open(queryfile).read().split("\n")]
+        queries = [i.strip() for i in open(queryfile).read().split("\n") if i != ""]
         for query in queries:
             print query
             exec(query)
             count = eval(query.split(", ")[1].split(")")[0])
             print count
-            # pprint(eval(query.split(", ")[0].split("(")[1]))
 
 if __name__ == "__main__":
     main(sys.argv[1:])
